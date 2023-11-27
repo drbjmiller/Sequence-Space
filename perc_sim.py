@@ -327,7 +327,7 @@ if __name__ == '__main__':
         frames.append(perc_data)
         os.remove(proc_data_file)
 
-    # Save data to output file and open/create file to write averate cluster size or average attempts
+    # Save data to the output file and open/create a file to write the average cluster size, percentage of large clusters, or average attempts
     if SIMULATION_TYPE == "Cluster":
         test_datafile(CL_OUTPUT_FILE, COLUMNS_CLUSTER)
         output_old_data = pd.read_csv(CL_OUTPUT_FILE)
