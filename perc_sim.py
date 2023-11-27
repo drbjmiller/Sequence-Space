@@ -39,7 +39,7 @@ PATH_MAX_PLG = 3000                             # Maximum attempts for % large c
 CLUSTER_MAX = 20000                             # Maximum cluster size for % large clusters
 SAMPLE_SIZE = 20                                # Number of trails to average. Set to PARALLEL_PROC * repeat
 
-SIMULATION_TYPE = "Attempts"                    # Type of simulation: "Cluster", "Percent", or "Attempts"
+SIMULATION_TYPE = "Cluster"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
 TRIALS_PARAMS_FILE = "trials_params.csv"        # Name of file with parameter values for trials
 PROCESS_FILE_BASE = "process"                   # File name base for output of processes
 CL_OUTPUT_FILE = "output_cl.csv"                # Name of output file for individual cluster output
@@ -224,7 +224,6 @@ def perc_process(process_num):
         test_datafile(process_file, COLUMNS_ATTEMPTS)
         pathinfo = {"Path Found": False, "Path Len Target": 0}        
     
-    np.random.seed(process_num)
     pid = getpid()
     
     # Iterate through trials in trails_params.csv
@@ -319,23 +318,35 @@ if __name__ == '__main__':
         process_num += 1
         process.join()
         if SIMULATION_TYPE == "Cluster":
-            perc_data_file = PROCESS_FILE_BASE + "_cl" + str(process_num) + ".csv"
+            proc_data_file = PROCESS_FILE_BASE + "_cl" + str(process_num) + ".csv"
         elif SIMULATION_TYPE == "Percent":
-            perc_data_file = PROCESS_FILE_BASE + "_plg" + str(process_num) + ".csv"
+            proc_data_file = PROCESS_FILE_BASE + "_plg" + str(process_num) + ".csv"
         elif SIMULATION_TYPE == "Attempts":
-            perc_data_file = PROCESS_FILE_BASE + "_att" + str(process_num) + ".csv"
-        perc_data = pd.read_csv(perc_data_file)
+            proc_data_file = PROCESS_FILE_BASE + "_att" + str(process_num) + ".csv"
+        perc_data = pd.read_csv(proc_data_file)
         frames.append(perc_data)
-    
+        os.remove(proc_data_file)
+
     # Save data to output file and open/create file to write averate cluster size or average attempts
-    output_data = pd.concat(frames)
     if SIMULATION_TYPE == "Cluster":
+        test_datafile(CL_OUTPUT_FILE, COLUMNS_CLUSTER)
+        output_old_data = pd.read_csv(CL_OUTPUT_FILE)
+        frames.append(output_old_data)
+        output_data = pd.concat(frames)
         output_data.to_csv(CL_OUTPUT_FILE, encoding='utf-8', index=False)
         test_datafile(CLAV_OUTPUT_FILE, COLUMNS_CLAV)
     elif SIMULATION_TYPE == "Percent":
+        test_datafile(PLG_OUTPUT_FILE, COLUMNS_PERC_LARGE)
+        output_old_data = pd.read_csv(PLG_OUTPUT_FILE)
+        frames.append(output_old_data)
+        output_data = pd.concat(frames)
         output_data.to_csv(PLG_OUTPUT_FILE, encoding='utf-8', index=False)
         test_datafile(PLGAV_OUTPUT_FILE, COLUMNS_PLGAV)
     elif SIMULATION_TYPE == "Attempts":
+        test_datafile(ATT_OUTPUT_FILE, COLUMNS_ATTEMPTS)
+        output_old_data = pd.read_csv(ATT_OUTPUT_FILE)
+        frames.append(output_old_data)
+        output_data = pd.concat(frames)
         output_data.to_csv(ATT_OUTPUT_FILE, encoding='utf-8', index=False)
         test_datafile(ATTAV_OUTPUT_FILE, COLUMNS_ATTAV)   
 
