@@ -38,7 +38,7 @@ PARALLEL_PROC = 2                               # Number of parallel processes
 PATH_MAX = 15000                                # Maximum path length for average attempts and average cluster size
 PATH_MAX_PLG = 3000                             # Maximum attempts for % large clusters
 CLUSTER_MAX = 20000                             # Maximum cluster size for % large clusters
-SAMPLE_SIZE = 20                                # Number of trails to average. Set to PARALLEL_PROC * repeat
+SAMPLE_SIZE = 20                                # Number of trials to average. Set to PARALLEL_PROC * repeat
 
 SIMULATION_TYPE = "Cluster"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
 TRIALS_PARAMS_FILE = "trials_params.csv"        # Name of file with parameter values for trials
@@ -227,7 +227,7 @@ def perc_process(process_num):
     
     pid = getpid()
     
-    # Iterate through trials in trails_params.csv
+    # Iterate through trials in trials_params.csv
     trials_params = pd.read_csv(TRIALS_PARAMS_FILE)
     for index, row in trials_params.iterrows():
         # Read run parameters from file
