@@ -5,17 +5,17 @@ Created on Sat Oct  1 15:52:21 2022
 
 @author: Brian Miller
 
-Program simulates protein sequence space by creating matricies whose dimension equals the length
+The program simulates protein sequence space by creating matrices whose dimension equals the length
 of a peptide sequence. Each dimension has a length equal to the number of amino acids. The value 
 of each site is set at random between 0 and 1. If the value is smaller than the proportion of 
 functional sequences, the sequence corresponding to that site is considered functional. 
 
-Simulation determines the following:
-    * If SIMULATION_TYPE = "Cluster", simulation reports size of cluster containing start sequence.
-    * If SIMULATION_TYPE = "Percent", simulation reports percentage of start sequences contained 
-      in large clusters that extent throughout sequence space.
-    * If SIMULATION_TYPE = "Attempts", simulation reports number of attempts 
-      required for path to connect start sequence to target.
+The simulation determines the following:
+    * If SIMULATION_TYPE = "Cluster", the simulation reports the size of the cluster containing the start sequence.
+    * If SIMULATION_TYPE = "Percent", the simulation reports the percentage of start sequences in large clusters
+      extending throughout sequence space.
+    * If SIMULATION_TYPE = "Attempts", the simulation reports the number of attempts 
+      required for a path to connect the start sequence to the target.
 The variable "steps" can equal 1, 2, or 3. It represents "ns" in percolation paper. 
 """
 import multiprocessing
@@ -25,7 +25,6 @@ import random
 import sys
 import os.path
 from os import getpid
-#from statistics import mean 
 
 COLUMNS_CLUSTER = ['Length', 'AA Num', 'Process', 'PID', 'Proportion', 'Cluster'] 
 COLUMNS_CLAV = ['Length', 'AA Num', 'Proportion', 'Cluster Ave', 'Trials'] 
