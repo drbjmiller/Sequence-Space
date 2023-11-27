@@ -8,7 +8,7 @@ Updated on Monday Nov 27 2023
 
 This program simulates protein sequence space by creating matrices whose dimension equals the length
 of a peptide sequence. Each dimension has a length equal to the number of amino acids. The value 
-of each site is set at random between 0 and 1. If the value is smaller than the proportion of 
+of each site to a random number between 0 and 1. If the value is smaller than the proportion of 
 functional sequences, the sequence corresponding to that site is considered functional. 
 
 The simulation determines the following:
@@ -17,7 +17,8 @@ The simulation determines the following:
       extending throughout sequence space.
     * If SIMULATION_TYPE = "Attempts", the simulation reports the number of attempts 
       required for a path to connect the start sequence to the target.
-The variable "steps" can equal 1, 2, or 3. It represents "ns" in percolation paper. 
+The variable "steps" can equal 1, 2, or 3. It represents the maximum number of amino acid differences 
+between two sequences that are still neighbors. 
 """
 import multiprocessing
 import numpy as np
