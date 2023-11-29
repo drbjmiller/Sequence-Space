@@ -8,7 +8,7 @@ Updated on Monday Nov 27 2023
 
 This program simulates protein sequence space by creating matrices whose dimension equals the length
 of a peptide sequence. Each dimension has a length equal to the number of amino acids. The value 
-of each site to a random number between 0 and 1. If the value is smaller than the proportion of 
+of each site is set to a random number between 0 and 1. If the value is smaller than a set proportion of 
 functional sequences, the sequence corresponding to that site is considered functional. 
 
 The simulation determines the following:
