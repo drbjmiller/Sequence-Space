@@ -1,12 +1,12 @@
 # Sequence-Space
 The Python program perc_sim.py models protein sequence space using one of three possible simulations determined by the value of the variable SIMULATION_TYPE. Each simulation generates a matrix, assigning each cell a random value between 0 and 1. Each sequence corresponds to a cell in the lattice. Cells corresponding to functional sequences hold values lower than the variable Proportion. Each simulation designates a start sequence composed entirely of the first amino acid. The three simulations are the following:
-1. Cluster: The "Cluster" simulation assigns a target that determines the target size. The simulation recursively follows every path that begins from the star sequence. It records the number of sequences that encompass the entire cluster of paths.
-2. Percent: The "Percent" simulation determines if the size of the cluster that includes the start sequence is larger than the variable CLUSTER_MAX. Clusters larger than that value extend throughout the entire sequence space.
-3. Attempts: The "Attempts" simulation generates matrices until a continuous path of functional sequences leads from the start sequence to the target defined by a target sequence consisting entirely of the second amino acid and the variable Tol. The simulation records the number of attempts and the length of the path leading from the start sequence to the target. 
+1. Cluster: The "Cluster" simulation recursively follows every path of neighboring functional cells that begins from the star sequence. The simulation records the number of sequences encompassing the entire cluster of paths.
+2. Percent: The "Percent" simulation determines if the size of the cluster that includes the start sequence is larger than the variable CLUSTER_MAX. Clusters larger than that value extend throughout the entire sequence space. Nearly all clusters in the trials I ran were smaller than 300 or larger than 500,000. 
+3. Attempts: The "Attempts" simulation generates matrices until a continuous path of functional sequences leads from the start sequence to the target defined by a target sequence consisting entirely of the second amino acid and the variable Tol. The simulation records the number of attempts and the path length leading from the start sequence to the target. 
 
-Every simulation accesses a CSV file set by the variable TRIALS_PARAMS_FILE that contains the parameters for simulation trails. Each trial is designed by a row in the file. The parameters include the following: 
+Every simulation accesses the CSV file set by the variable TRIALS_PARAMS_FILE that contains the parameters for simulation trails. Each trial is designed by a row in the file. The parameters include the following: 
 * Length: Length of amino acid chain. The length determines the dimensions of a generated matrix that represents sequence space.
-* AA Num: Number of amino acids that could reside in each position of the chain. Each dimension has a width of AA Num. Any amino acid can transition to any other amino acid in a single step.
+* AA Num: Number of amino acids that could reside in each position of the chain. Each dimension has a size of AA Num. Any amino acid can transition to any other amino acid in a single step.
 * Proportion: Proportion of sequences that are randomly assigned as functional. 
 * Tol: Number of amino acids in a sequence that can differ from a target sequence where the sequence is considered inside the target.
 * Steps: The maximum number of amino-acid differences between two sequences that are still considered neighbors.
