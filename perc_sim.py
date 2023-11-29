@@ -17,8 +17,8 @@ The simulation determines the following:
       extending throughout sequence space.
     * If SIMULATION_TYPE = "Attempts", the simulation reports the number of attempts 
       required for a path to connect the start sequence to the target.
-The variable "steps" can equal 1, 2, or 3. It represents the maximum number of amino acid differences 
-between two sequences that are still neighbors. 
+The variable "steps" represents the maximum number of amino acid differences between two sequences that are still neighbors. 
+It can equal 1, 2, or 3. 
 """
 import multiprocessing
 import numpy as np
