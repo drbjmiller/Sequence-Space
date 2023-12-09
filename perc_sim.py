@@ -211,7 +211,7 @@ def search_path(mat, length, aanum, proportion, steps, tol, seq, target_seq, pat
     return
 
 #############################################
-# Run separate processes to search all p values multiple times in parallel
+# Run separate processes to search all p values PARALLEL_PROC times in parallel
 def perc_process(process_num):
     if SIMULATION_TYPE == "Cluster":
         process_file = PROCESS_FILE_BASE + "_cl" + str(process_num) + ".csv"
