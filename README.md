@@ -11,6 +11,7 @@ Every simulation accesses the CSV file set by the variable TRIALS_PARAMS_FILE th
 * Tol: Number of amino acids in a sequence that can differ from a target sequence where the sequence is considered inside the target.
 * Steps: The maximum number of amino-acid differences between two sequences that are still considered neighbors.
 * Repeat: The number of times a simulation is repeated with the same parameters. 
+
 The simulation launches multiple processes that run in parallel. Each runs all the trials included in TRIALS_PARAMS_FILE. The number of parallel processes is set with the variable PARALLEL_PROC. The number of total trials for each set of parameters is PARALLEL_PROC * Repeat for each program run. The results for individual trials and the averages are saved in the files designated by the global file variables. 
 
 The files trails_params10.csv and trails_params13.csv contain the trails I ran for the matrics corresponding to sequences of length 10 (AA Num = 7) and length 13 (AA Num = 5). The results for those runs were recorded in the file Simulation_Data.xlsx. The simulation adds new results at the beginning of the output files.  
