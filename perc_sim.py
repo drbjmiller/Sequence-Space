@@ -27,21 +27,21 @@ import random
 import sys
 import os.path
 from os import getpid
+import math 
 
 COLUMNS_CLUSTER = ['Length', 'AA Num', 'Process', 'PID', 'Proportion', 'Cluster'] 
-COLUMNS_CLAV = ['Length', 'AA Num', 'Proportion', 'Cluster Ave', 'Trials'] 
-COLUMNS_PERC_LARGE = ['Length', 'AA Num', 'Process', 'PID', 'Proportion', 'Large'] 
-COLUMNS_PLGAV = ['Length', 'AA Num', 'Proportion', 'Perc Large', 'Trials'] 
+COLUMNS_CLAV = ['Length', 'AA Num', 'Proportion', 'Cluster Ave', 'STD', 'Trials'] 
+COLUMNS_PERC_LARGE = ['Length', 'AA Num', 'Process', 'PID', 'Proportion', 'Size'] 
+COLUMNS_PLGAV = ['Length', 'AA Num', 'Proportion', 'Perc Large', 'STD', 'Trials'] 
 COLUMNS_ATTEMPTS = ['Length', 'AA Num', 'Process', 'PID', 'Proportion', 'Attempts', 'Path Len'] 
-COLUMNS_ATTAV = ['Length', 'AA Num', 'Proportion', 'Attempts Ave', 'Path Len Ave', 'Trials'] 
+COLUMNS_ATTAV = ['Length', 'AA Num', 'Proportion', 'Attempts Ave', 'Att STD', 'Path Len Ave', 'Len STD', 'Trials'] 
 
 PARALLEL_PROC = 2                               # Number of parallel processes
 PATH_MAX = 15000                                # Maximum path length for average attempts and average cluster size
 PATH_MAX_PLG = 3000                             # Maximum attempts for % large clusters
 CLUSTER_MAX = 20000                             # Maximum cluster size for % large clusters
-SAMPLE_SIZE = 20                                # Number of trials to average. Set to PARALLEL_PROC * repeat
 
-SIMULATION_TYPE = "Cluster"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
+SIMULATION_TYPE = "Percent"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
 TRIALS_PARAMS_FILE = "trials_params.csv"        # Name of file with parameter values for trials
 PROCESS_FILE_BASE = "process"                   # File name base for output of processes
 CL_OUTPUT_FILE = "output_cl.csv"                # Name of output file for individual cluster output
@@ -147,12 +147,12 @@ def search_path(mat, length, aanum, proportion, steps, tol, seq, target_seq, pat
         pathinfo["Cluster"] += 1        # Increment cluster size by 1
     elif SIMULATION_TYPE == "Percent":
         # Check if cluster size exceeds CLUSTER_MAX indicating large cluster.
-        if pathinfo["Cluster Max"] == True:
+        if pathinfo["Size"] == "Large":
             return
         pathinfo["Cluster"] += 1        # Increment cluster size by 1
         # Check if cluster size exceeds CLUSTER_MAX. If so, set pathinfo["Cluster Max"] to True
         if pathinfo["Cluster"] >= CLUSTER_MAX:
-            pathinfo["Cluster Max"] = True
+            pathinfo["Size"] = "Large"
             return
     elif SIMULATION_TYPE == "Attempts":
         if pathinfo["Path Found"] == True:
@@ -220,7 +220,7 @@ def perc_process(process_num):
     elif SIMULATION_TYPE == "Percent":
         process_file = PROCESS_FILE_BASE + "_plg" + str(process_num) + ".csv"
         test_datafile(process_file, COLUMNS_PERC_LARGE)
-        pathinfo = {"Cluster": 0, "Cluster Max": False}
+        pathinfo = {"Cluster": 0, "Size": "Small"}
     elif SIMULATION_TYPE == "Attempts":
         process_file = PROCESS_FILE_BASE + "_att" + str(process_num) + ".csv"
         test_datafile(process_file, COLUMNS_ATTEMPTS)
@@ -264,14 +264,14 @@ def perc_process(process_num):
                 # Initialize variables and matrix
                 pathlen = -1
                 pathinfo["Cluster"] = 0
-                pathinfo["Cluster Max"] = False
+                pathinfo["Size"] = "Small"                
                 mat = initialize(length, aanum)
                 
                 # Search through matricies for all paths
                 search_path(mat, length, aanum, proportion, steps, tol, initial_seq, target_seq, pathlen, pathinfo)
     
                 # Record results to file
-                process_data = [length, aanum, process_num, pid, proportion, pathinfo["Cluster Max"]]
+                process_data = [length, aanum, process_num, pid, proportion, pathinfo["Size"]]
                 perc_data = pd.read_csv(process_file)
                 perc_data.loc[len(perc_data.index)] = process_data
                 perc_data[['Length', 'AA Num', 'Process', 'PID']] = perc_data[['Length', 'AA Num', 'Process', 'PID']].astype('int64')
@@ -336,30 +336,26 @@ if __name__ == '__main__':
         frames.append(output_old_data)
         output_data = pd.concat(frames)
         output_data.to_csv(CL_OUTPUT_FILE, encoding='utf-8', index=False)
-        test_datafile(CLAV_OUTPUT_FILE, COLUMNS_CLAV)
     elif SIMULATION_TYPE == "Percent":
         test_datafile(PLG_OUTPUT_FILE, COLUMNS_PERC_LARGE)
         output_old_data = pd.read_csv(PLG_OUTPUT_FILE)
         frames.append(output_old_data)
         output_data = pd.concat(frames)
         output_data.to_csv(PLG_OUTPUT_FILE, encoding='utf-8', index=False)
-        test_datafile(PLGAV_OUTPUT_FILE, COLUMNS_PLGAV)
     elif SIMULATION_TYPE == "Attempts":
         test_datafile(ATT_OUTPUT_FILE, COLUMNS_ATTEMPTS)
         output_old_data = pd.read_csv(ATT_OUTPUT_FILE)
         frames.append(output_old_data)
         output_data = pd.concat(frames)
-        output_data.to_csv(ATT_OUTPUT_FILE, encoding='utf-8', index=False)
-        test_datafile(ATTAV_OUTPUT_FILE, COLUMNS_ATTAV)   
+        output_data.to_csv(ATT_OUTPUT_FILE, encoding='utf-8', index=False) 
 
     # Calculate average cluster size, percent large clusters, or average attempts and same to output file. 
-    # Read existing output data on averages into dataframe 
     if SIMULATION_TYPE == "Cluster":
-        output_ave = pd.read_csv(CLAV_OUTPUT_FILE)     
+        output_ave = pd.DataFrame(columns = COLUMNS_CLAV)     
     elif SIMULATION_TYPE == "Percent":
-        output_ave = pd.read_csv(PLGAV_OUTPUT_FILE) 
+        output_ave = pd.DataFrame(columns = COLUMNS_PLGAV) 
     elif SIMULATION_TYPE == "Attempts":        
-        output_ave = pd.read_csv(ATTAV_OUTPUT_FILE) 
+        output_ave = pd.DataFrame(columns = COLUMNS_ATTAV) 
 
     length_set = list(set(output_data.Length))                      # List of sequence lengths in output data
     for length in length_set:
@@ -371,16 +367,21 @@ if __name__ == '__main__':
             # Average relevant variable(s) for simulation type
             if SIMULATION_TYPE == "Cluster":
                 cluster_av = round(output_len_prop["Cluster"].mean(),1)      # Calculate average cluster size
-                output_avdata = [length, aa_num, proportion, cluster_av, SAMPLE_SIZE]
+                cluster_std = round(output_len_prop["Cluster"].std()/math.sqrt(len(output_len_prop)),1)     # Calculate average cluster size
+                output_avdata = [length, aa_num, proportion, cluster_av, cluster_std, len(output_len_prop)]
             elif SIMULATION_TYPE == "Percent":
                 # Calculate percentage of large clusters
-                percent_lg = round(output_len_prop["Large"].value_counts()[True] / len(output_len_prop), 2)
-                output_avdata = [length, aa_num, proportion, percent_lg, SAMPLE_SIZE]
+                percent_lg = round(len(output_len_prop[output_len_prop.Size == "Large"]) / len(output_len_prop), 2)
+                perclg_std = round(math.sqrt(percent_lg * (1 - percent_lg) / len(output_len_prop)), 3)
+                output_avdata = [length, aa_num, proportion, percent_lg, perclg_std, len(output_len_prop)]
             elif SIMULATION_TYPE == "Attempts":
                 attempts_ave = round(output_len_prop["Attempts"].mean(), 1)
+                attempts_std = round(output_len_prop["Attempts"].std()/math.sqrt(len(output_len_prop)), 1)
                 path_len_ave = round(output_len_prop["Path Len"].mean(), 1) 
-                output_avdata = [length, aa_num, proportion, attempts_ave, path_len_ave, SAMPLE_SIZE]
+                path_len_std = round(output_len_prop["Path Len"].std()/math.sqrt(len(output_len_prop)) , 1)
+                output_avdata = [length, aa_num, proportion, attempts_ave, attempts_std, path_len_ave, path_len_std, len(output_len_prop)]
             output_ave.loc[len(output_ave.index)] = output_avdata   
+            output_ave[['Length', 'AA Num', 'Trials']] = output_ave[['Length', 'AA Num', 'Trials']].astype('int64')  
     
     if SIMULATION_TYPE == "Cluster":
         output_ave.to_csv(CLAV_OUTPUT_FILE, encoding='utf-8', index=False) 
