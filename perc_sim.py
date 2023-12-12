@@ -352,10 +352,13 @@ if __name__ == '__main__':
     # Calculate average cluster size, percent large clusters, or average attempts and same to output file. 
     if SIMULATION_TYPE == "Cluster":
         output_ave = pd.DataFrame(columns = COLUMNS_CLAV)     
+        output_file = CLAV_OUTPUT_FILE
     elif SIMULATION_TYPE == "Percent":
         output_ave = pd.DataFrame(columns = COLUMNS_PLGAV) 
+        output_file = PLGAV_OUTPUT_FILE
     elif SIMULATION_TYPE == "Attempts":        
         output_ave = pd.DataFrame(columns = COLUMNS_ATTAV) 
+        output_file = ATTAV_OUTPUT_FILE
 
     length_set = list(set(output_data.Length))                      # List of sequence lengths in output data
     for length in length_set:
@@ -370,20 +373,17 @@ if __name__ == '__main__':
                 cluster_av = round(output_len_prop["Cluster"].mean(),1)      # Calculate average cluster size
                 cluster_std = round(output_len_prop["Cluster"].std()/math.sqrt(sample),1)     # Calculate average cluster size
                 output_avdata = [length, aa_num, proportion, cluster_av, cluster_std, sample]
-                output_file = CLAV_OUTPUT_FILE
             elif SIMULATION_TYPE == "Percent":
                 # Calculate percentage of large clusters
                 percent_lg = round(len(output_len_prop[output_len_prop.Size == "Large"]) / sample, 2)
                 perclg_std = round(math.sqrt(percent_lg * (1 - percent_lg) / sample), 3)
                 output_avdata = [length, aa_num, proportion, percent_lg, perclg_std, sample]
-                output_file = PLGAV_OUTPUT_FILE
             elif SIMULATION_TYPE == "Attempts":
                 attempts_ave = round(output_len_prop["Attempts"].mean(), 1)
                 attempts_std = round(output_len_prop["Attempts"].std()/math.sqrt(sample), 1)
                 path_len_ave = round(output_len_prop["Path Len"].mean(), 1) 
                 path_len_std = round(output_len_prop["Path Len"].std()/math.sqrt(sample) , 1)
                 output_avdata = [length, aa_num, proportion, attempts_ave, attempts_std, path_len_ave, path_len_std, sample]
-                output_file = ATTAV_OUTPUT_FILE
             output_ave.loc[len(output_ave.index)] = output_avdata   
             output_ave[['Length', 'AA Num', 'Trials']] = output_ave[['Length', 'AA Num', 'Trials']].astype('int64')      
     output_ave.to_csv(output_file, encoding='utf-8', index=False)     
