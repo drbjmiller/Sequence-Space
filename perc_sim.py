@@ -41,7 +41,7 @@ PATH_MAX = 15000                                # Maximum path length for averag
 PATH_MAX_PLG = 3000                             # Maximum attempts for % large clusters
 CLUSTER_MAX = 20000                             # Maximum cluster size for % large clusters
 
-SIMULATION_TYPE = "Percent"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
+SIMULATION_TYPE = "Cluster"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
 TRIALS_PARAMS_FILE = "trials_params.csv"        # Name of file with parameter values for trials
 PROCESS_FILE_BASE = "process"                   # File name base for output of processes
 CL_OUTPUT_FILE = "output_cl.csv"                # Name of output file for individual cluster output
@@ -363,32 +363,30 @@ if __name__ == '__main__':
         proportion_set = list(set(output_length.Proportion))        # List of proportions for each length
         for proportion in proportion_set:
             output_len_prop = output_length[output_length.Proportion==proportion]
+            sample = len(output_len_prop)
             aa_num = output_len_prop.iloc[0]['AA Num']
             # Average relevant variable(s) for simulation type
             if SIMULATION_TYPE == "Cluster":
                 cluster_av = round(output_len_prop["Cluster"].mean(),1)      # Calculate average cluster size
-                cluster_std = round(output_len_prop["Cluster"].std()/math.sqrt(len(output_len_prop)),1)     # Calculate average cluster size
-                output_avdata = [length, aa_num, proportion, cluster_av, cluster_std, len(output_len_prop)]
+                cluster_std = round(output_len_prop["Cluster"].std()/math.sqrt(sample),1)     # Calculate average cluster size
+                output_avdata = [length, aa_num, proportion, cluster_av, cluster_std, sample]
+                output_file = CLAV_OUTPUT_FILE
             elif SIMULATION_TYPE == "Percent":
                 # Calculate percentage of large clusters
-                percent_lg = round(len(output_len_prop[output_len_prop.Size == "Large"]) / len(output_len_prop), 2)
-                perclg_std = round(math.sqrt(percent_lg * (1 - percent_lg) / len(output_len_prop)), 3)
-                output_avdata = [length, aa_num, proportion, percent_lg, perclg_std, len(output_len_prop)]
+                percent_lg = round(len(output_len_prop[output_len_prop.Size == "Large"]) / sample, 2)
+                perclg_std = round(math.sqrt(percent_lg * (1 - percent_lg) / sample), 3)
+                output_avdata = [length, aa_num, proportion, percent_lg, perclg_std, sample]
+                output_file = PLGAV_OUTPUT_FILE
             elif SIMULATION_TYPE == "Attempts":
                 attempts_ave = round(output_len_prop["Attempts"].mean(), 1)
-                attempts_std = round(output_len_prop["Attempts"].std()/math.sqrt(len(output_len_prop)), 1)
+                attempts_std = round(output_len_prop["Attempts"].std()/math.sqrt(sample), 1)
                 path_len_ave = round(output_len_prop["Path Len"].mean(), 1) 
-                path_len_std = round(output_len_prop["Path Len"].std()/math.sqrt(len(output_len_prop)) , 1)
-                output_avdata = [length, aa_num, proportion, attempts_ave, attempts_std, path_len_ave, path_len_std, len(output_len_prop)]
+                path_len_std = round(output_len_prop["Path Len"].std()/math.sqrt(sample) , 1)
+                output_avdata = [length, aa_num, proportion, attempts_ave, attempts_std, path_len_ave, path_len_std, sample]
+                output_file = ATTAV_OUTPUT_FILE
             output_ave.loc[len(output_ave.index)] = output_avdata   
-            output_ave[['Length', 'AA Num', 'Trials']] = output_ave[['Length', 'AA Num', 'Trials']].astype('int64')  
-    
-    if SIMULATION_TYPE == "Cluster":
-        output_ave.to_csv(CLAV_OUTPUT_FILE, encoding='utf-8', index=False) 
-    elif SIMULATION_TYPE == "Percent":
-        output_ave.to_csv(PLGAV_OUTPUT_FILE, encoding='utf-8', index=False) 
-    elif SIMULATION_TYPE == "Attempts":  
-        output_ave.to_csv(ATTAV_OUTPUT_FILE, encoding='utf-8', index=False) 
-    
+            output_ave[['Length', 'AA Num', 'Trials']] = output_ave[['Length', 'AA Num', 'Trials']].astype('int64')      
+    output_ave.to_csv(output_file, encoding='utf-8', index=False)     
+
     print("All percolation processes have finished")
 
