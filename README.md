@@ -6,7 +6,7 @@ The Python program perc_sim.py models protein sequence space using one of three 
 
 Every simulation accesses the CSV file set by the variable TRIALS_PARAMS_FILE that contains the parameters for simulation trails. Each trial is designed by a row in the file. The parameters include the following: 
 * Length: Length of amino acid chain. The length determines the dimensions of a generated matrix that represents sequence space.
-* AA Num: Number of amino acids that could reside in each position of the chain. Each dimension has a size of AA Num. If the variable TRANSITIONS = "Any", any amino acid can transition to any other amino acid in a single step. If TRANSITIONS = "Reduced", 
+* AA Num: Number of amino acids that could reside in each position of the chain. Each dimension has a size of AA Num. If the variable TRANSITIONS = "Any", any amino acid can transition to any other amino acid in a single step. If TRANSITIONS = "Reduced", only the two mutations above and below the amino acid at each location could replace the current one. Line 177 can be adjusted to remove or add amino acids. 
 * Proportion: Proportion of sequences that are randomly assigned as functional. 
 * Tol: Number of amino acids in a sequence that can differ from a target sequence where the sequence is considered inside the target.
 * Steps: The maximum number of amino-acid differences between two sequences that are still considered neighbors.
@@ -14,6 +14,6 @@ Every simulation accesses the CSV file set by the variable TRIALS_PARAMS_FILE th
 
 The simulation launches multiple processes that run in parallel. Each runs all the trials included in TRIALS_PARAMS_FILE. The number of parallel processes is set with the variable PARALLEL_PROC. The number of total trials for each set of parameters is PARALLEL_PROC * Repeat for each program run. The results for individual trials and the averages (and the standard deviations) are saved in the files designated by the global file variables. If the program is run multiple times, individual trial results are added to the output file for individual trials, and averages are recalculated and saved to the output file for averages. The old average output file is overwritten. 
 
-The files trails_params10.csv and trails_params13.csv contain the trails I ran for the matrics corresponding to sequences of length 10 (AA Num = 7) and length 13 (AA Num = 5). The results for those runs were recorded in the file Simulation_Data.xlsx. The simulation adds new results at the beginning of the output files.  
+The files trails_params10.csv and trails_params13.csv contain the trails I ran for the matrics corresponding to sequences of length 10 (AA Num = 7) and length 13 (AA Num = 5). The results for all runs are contained in the file Simulation_Data.xlsx. The simulation adds new results at the beginning of the output files.  
 
 The program only needs to be run with python3. The names of the input and output files are set using the global variables at the beginning of the program. The number of parallel processes that a computer can manage depends on the memory and number of CPU cores. On a Linux server with 512GB RAM and 32 CPU cores, I ran 20 parallel processes with matrices of length 10. Only 6 parallel processes could be run for matrices of length 13 since they correspond to a much larger sequence space. 
