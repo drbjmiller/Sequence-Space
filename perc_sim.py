@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct  1 15:52:21 2022
-Updated on Tuesday Dec 12 2023
+Updated on Monday Nov 27 2023
 
 @author: Brian Miller
 
@@ -41,7 +41,8 @@ PATH_MAX = 15000                                # Maximum path length for averag
 PATH_MAX_PLG = 3000                             # Maximum attempts for % large clusters
 CLUSTER_MAX = 20000                             # Maximum cluster size for % large clusters
 
-SIMULATION_TYPE = "Cluster"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
+SIMULATION_TYPE = "Percent"                     # Type of simulation: "Cluster", "Percent", or "Attempts"
+TRANSITIONS = "All"                             # Allowed transitions: "All", "Reduced"
 TRIALS_PARAMS_FILE = "trials_params.csv"        # Name of file with parameter values for trials
 PROCESS_FILE_BASE = "process"                   # File name base for output of processes
 CL_OUTPUT_FILE = "output_cl.csv"                # Name of output file for individual cluster output
@@ -168,7 +169,13 @@ def search_path(mat, length, aanum, proportion, steps, tol, seq, target_seq, pat
     aas = [item for item in range(aanum)]
     if steps == 1:
         for pos_change in range(length):
-            for newaa in random.sample(aas, aanum):
+            if TRANSITIONS == "All":
+                trans_aa = random.sample(aas, aanum)
+            elif TRANSITIONS == "Reduced":
+                old_aa = seq[pos_change]
+                # This line can be adjusted for fewer or more transitions. Currently, two amino acids below and above the current amino acid are included.
+                trans_aa = [(old_aa-2)%aanum, (old_aa-1)%aanum, (old_aa+1)%aanum, (old_aa+2)%aanum]    
+            for newaa in trans_aa:
                 newseq = seq.copy()
                 newseq[pos_change] = newaa
                 if retrieve(mat, newseq, len(newseq)) < proportion:
