@@ -1,4 +1,7 @@
 # Sequence-Space
+The programs and data files in this repository are for the article "A percolation theory analysis of continuous functional paths 
+in protein sequence space affirms previous insights on the optimization of proteins for adaptability": https://doi.org/10.1371/journal.pone.0314929.
+
 The Python program perc_sim.py models protein sequence space using one of three possible simulations determined by the value of the variable SIMULATION_TYPE. Each simulation generates a matrix, assigning each cell a random value between 0 and 1. Each sequence corresponds to a cell in the lattice. Cells corresponding to functional sequences hold values lower than the variable Proportion. Each simulation designates a start sequence composed entirely of the first amino acid. The three simulations are the following:
 1. Cluster: The "Cluster" simulation recursively follows every path of neighboring functional cells that begins from the star sequence. The simulation records the number of sequences encompassing the entire cluster of paths.
 2. Percent: The "Percent" simulation determines if the size of the cluster that includes the start sequence is larger than the variable CLUSTER_MAX. Clusters larger than that value extend throughout the entire sequence space. Nearly all clusters in the trials I ran were smaller than 300 or larger than 500,000. 
